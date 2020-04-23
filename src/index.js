@@ -33,4 +33,4 @@ mongoose.connection.once('open', () => {
   console.log('database connect!');
 });
 
-app.listen(process.env.APP_URL);
+app.listen(process.env.PORT || 3000);
