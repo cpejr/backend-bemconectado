@@ -71,6 +71,7 @@ routes.put('/admin/:ongId', celebrate({
     cep: Joi.string().optional(),
     picpay: Joi.string().optional(),
     facebook: Joi.string().optional(),
+    instagram: Joi.string().optional(),
     ddd: Joi.string().optional(),
     phoneNumber: Joi.string().optional(),
     email: Joi.string().optional(),

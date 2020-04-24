@@ -50,6 +50,10 @@ const ong = new mongoose.Schema({
     type: String,
     required: false
   },
+  instagram: {
+    type: String,
+    required: false
+  },
   ddd: {
     type: String,
     required: false
