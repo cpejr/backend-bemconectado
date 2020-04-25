@@ -2,7 +2,7 @@ const Ong = require('../../models/ongDB')
 const mongoose = require('mongoose');
 const fs = require('fs');
 const { Joi } = require('celebrate');
-
+const emailController = require('./emailController')
 
 module.exports = {
   async create(request, response) {
@@ -54,6 +54,8 @@ module.exports = {
 
         let { _id } = await Ong.createNew(ong);
 
+        emailController.userWaitingForApproval(ong.email, ong.name);
+
         return response.json({ _id, name });
       }
       else {
@@ -67,7 +69,6 @@ module.exports = {
 
   async index(request, response) {
     try {
-
       const { page, city, state, name, categs } = request.query;
 
       const _categs = categs ? categs.split(',') : undefined;
@@ -93,8 +94,8 @@ module.exports = {
     try {
       let id = request.params.ongId;
 
-      let ongEmail = await Ong.getById(id).email;
-      emailController.userRejectedEmail(ongEmail);
+      const _ong = await Ong.getById(id);
+      emailController.userRejectedEmail(_ong.email, _ong.name);
 
       let result = await Ong.deleteOng(id);
 
@@ -112,7 +113,6 @@ module.exports = {
 
   async totalApproved(request, response) {
     try {
-
       const { city, state, name, categs } = request.query;
 
       const _categs = categs ? categs.split(',') : undefined;
