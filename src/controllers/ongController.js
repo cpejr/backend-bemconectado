@@ -20,6 +20,7 @@ module.exports = {
       complement: Joi.string().optional(),
       picpay: Joi.string().optional(),
       facebook: Joi.string().optional(),
+      instagram: Joi.string().optional(),
       ddd: Joi.string().optional(),
       phoneNumber: Joi.string().optional(),
       site: Joi.string().optional(),
