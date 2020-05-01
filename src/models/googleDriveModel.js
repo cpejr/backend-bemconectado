@@ -12,8 +12,6 @@ const SCOPES = ['https://www.googleapis.com/auth/drive'];
 // time.
 const TOKEN_PATH = 'token.json';
 
-let oAuth2Client;
-
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
@@ -23,7 +21,7 @@ let oAuth2Client;
 function authorize(credentials, callback) {
   console.log(credentials.installed)
   const { client_secret, client_id, redirect_uris } = credentials.installed;
-  oAuth2Client = new google.auth.OAuth2(
+  const oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
 
   // Check if we have previously stored a token.
@@ -46,29 +44,23 @@ function getAccessToken(oAuth2Client, callback) {
     scope: SCOPES,
   });
   console.log('Authorize this app by visiting this url:', authUrl);
-}
-
-exports.validateCredentials = function validateCredentials(code, scope) {
-  return new Promise((resolve, reject) => {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  rl.question('Enter the code from that page here: ', (code) => {
+    rl.close();
     oAuth2Client.getToken(code, (err, token) => {
-      if (err) {
-        console.error(`Error retrieving access token(${token})`, err);
-        return reject(err);
-      }
+      if (err) return console.error(`Error retrieving access token(${token})`, err);
       oAuth2Client.setCredentials(token);
       // Store the token to disk for later program executions
       fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-        if (err) {
-          console.error(err);
-          return reject(err);
-        }
+        if (err) return console.error(err);
         console.log('Token stored to', TOKEN_PATH);
       });
-      resolve(TOKEN_PATH);
       callback(oAuth2Client);
     });
-  })
-
+  });
 }
 
 /**
