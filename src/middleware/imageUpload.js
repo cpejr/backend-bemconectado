@@ -1,12 +1,5 @@
 const multer = require('multer');
-const path = require("path");
-
-const storage = multer.diskStorage({
-  destination: `public/images`,
-  filename: (_req, file, cb) => {
-    cb(null, `${Date.now()}${path.extname(file.originalname)}`);
-  }
-});
+var storage = multer.memoryStorage()
 
 const multerImageUploader = multer({
   storage: storage,
@@ -19,7 +12,7 @@ const multerImageUploader = multer({
 
 const imageUpload = (imageName) => {
   return (req, res, next) => {
-    multerImageUploader.single(imageName)(req, res, function(err) {
+    multerImageUploader.single(imageName)(req, res, function (err) {
       if (err) {
         //TODO melhorar essa mensagem de erro!
         return res.status(500).json(err);

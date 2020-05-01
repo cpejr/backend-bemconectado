@@ -2,7 +2,7 @@ const Ong = require('../../models/ongDB')
 const mongoose = require('mongoose');
 const fs = require('fs');
 const { Joi } = require('celebrate');
-
+const { uploadFile } = require('../models/googleDriveModel');
 
 module.exports = {
   async create(request, response) {
@@ -31,19 +31,7 @@ module.exports = {
       imageSrc: Joi.string().optional(),
     })
 
-    const validation = schema.validate(request.body);
-
-    if (validation.error) {
-      try {
-        if (request.file && request.file.filename)
-          fs.unlinkSync(`public/images/${request.file.filename}`);
-      } catch (err) {
-        console.log(err)
-        return response.status(500).json({ error: 'error while generating file' });
-      }
-      return response.status(400).json(validation.error.details[0].message);
-    }
-
+    schema.validate(request.body);
 
     try {
       let { name, cnpj } = request.body;
@@ -51,11 +39,16 @@ module.exports = {
       console.log(exist);
       if (!exist) {
         let ong = request.body;
-        ong.imageSrc = request.file.filename;
+
+        const { originalname, buffer, mimetype } = request.file;
+
+        const imageSrc = await uploadFile(buffer, originalname, mimetype)
+
+        ong.imageSrc = imageSrc;
 
         let { _id } = await Ong.createNew(ong);
 
-        return response.json({ _id, name });
+        return response.status(200).json({ _id, name });
       }
       else {
         return response.status(409).json({ error: 'Ong já existente' });

@@ -13,6 +13,8 @@ const imageUpload = require('./middleware/imageUpload');
 
 routes.post('/registerOng', imageUpload('imageFile'), ongController.create);
 
+// routes.put('/UpdateImage', imageUpload('imageFile'), ongController.create);
+
 routes.get('/ongs', celebrate({
   [Segments.QUERY]: Joi.object().keys({
     page: Joi.number().optional(),
