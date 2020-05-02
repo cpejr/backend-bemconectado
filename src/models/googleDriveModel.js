@@ -4,8 +4,8 @@ const readline = require('readline');
 const { google } = require('googleapis');
 const stream = require('stream');
 const path = require("path");
+const Token = require("../../models/tokenDB");
 
-// If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
@@ -102,7 +102,27 @@ module.exports.config = function config() {
   oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
 
-  const jsonToken = { refresh_token: process.env.OAUTH2_REFRESH_TOKEN };
+  let refresh_token = process.env.OAUTH2_REFRESH_TOKEN;
+  let access_token;
+
+
+  oAuth2Client.on('tokens', (tokens) => {
+    if (tokens.refresh_token) {
+      refresh_token = tokens.refresh_token
+      // store the refresh_token in my database!
+      console.log(tokens.refresh_token);
+    }
+    access_token = tokens.access_token;
+    console.log(tokens.access_token);
+  });
+
+  const jsonToken = {
+    refresh_token,
+    access_token,
+    token_type: "Bearer",
+    scope: SCOPES[0]
+  };
+
   oAuth2Client.setCredentials(jsonToken);
 
   listFiles();
