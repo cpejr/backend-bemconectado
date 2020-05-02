@@ -6,6 +6,9 @@ const stream = require('stream');
 const path = require("path");
 const Token = require("../../models/tokenDB");
 
+let oAuth2Client;
+let token;
+
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
@@ -22,52 +25,36 @@ const CREDENTIALS = {
   javascript_origins: process.env.OAUTH2_JAVASCRIPT_ORIGINS.split(','),
 }
 
-console.log(CREDENTIALS)
-
-let oAuth2Client;
-
 /**
- * Caso não tenha o refresh_token
- * 
  * Get and store new token after prompting for user authorization, and then
  * execute the given callback with the authorized OAuth2 client.
- * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
- * @param {getEventsCallback} callback The callback for the authorized client.
  */
-// function getAccessToken(oAuth2Client, callback) {
-//   const authUrl = oAuth2Client.generateAuthUrl({
-//     access_type: 'offline',
-//     scope: SCOPES,
-//   });
-//   console.log('Authorize this app by visiting this url:', authUrl);
-// }
+function getAccessToken() {
+  const authUrl = oAuth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: SCOPES,
+  });
+  return authUrl;
+}
 
 
-// function validateCredentials(code, scope) {
-//   return new Promise((resolve, reject) => {
-//     oAuth2Client.getToken(code, (err, token) => {
-//       if (err) {
-//         console.error(`Error retrieving access token(${token})`, err);
-//         return reject(err);
-//       }
-//       oAuth2Client.setCredentials(token);
-//       // Store the token to disk for later program executions
-//       fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-//         if (err) {
-//           console.error(err);
-//           return reject(err);
-//         }
-//         console.log('Token stored to', TOKEN_PATH);
-//       });
-//       resolve(TOKEN_PATH);
-//       callback(oAuth2Client);
-//     });
-//   })
+function validateCredentials(code, scope) {
+  return new Promise((resolve, reject) => {
+    oAuth2Client.getToken(code, (err, newToken) => {
+      if (err) {
+        console.error(`Error retrieving access token`, err);
+        return reject(err);
+      }
+      token = newToken;
+      oAuth2Client.setCredentials(newToken);
+      return resolve();
+    });
+  })
 
-// }
+}
 
 
-// exports.validateCredentials = validateCredentials;
+exports.validateCredentials = validateCredentials;
 
 /**
  * Lists the names and IDs of up to 10 files.
@@ -93,74 +80,72 @@ function listFiles() {
   });
 }
 
-module.exports.config = function config() {
+module.exports.config = async function config() {
   // Load client secrets from a local file.
   // Authorize a client with credentials, then call the Google Drive API.
 
   const { client_secret, client_id, redirect_uris } = CREDENTIALS;
 
   oAuth2Client = new google.auth.OAuth2(
-    client_id, client_secret, redirect_uris[0]);
+    client_id, client_secret, redirect_uris[1]);
 
-  let refresh_token = process.env.OAUTH2_REFRESH_TOKEN;
-  let access_token;
-
-
-  oAuth2Client.on('tokens', (tokens) => {
-    if (tokens.refresh_token) {
-      refresh_token = tokens.refresh_token
-      // store the refresh_token in my database!
-      console.log(tokens.refresh_token);
-    }
-    access_token = tokens.access_token;
-    console.log(tokens.access_token);
+  oAuth2Client.on('tokens', (newToken) => {
+    // Store the token in to the database
+    Token.updateToken({...token, ...newToken}).catch(err => {
+      console.log('Failed to save the token in the database');
+      console.log(err);
+    });
   });
 
-  const jsonToken = {
-    refresh_token,
-    access_token,
-    token_type: "Bearer",
-    scope: SCOPES[0]
-  };
 
-  oAuth2Client.setCredentials(jsonToken);
+  token = await Token.getToken();
 
-  listFiles();
+  if (!token) {
+    console.log(`
+    Token não encontrado, ou não está na base. Siga as instruções:
+      1) Acesse a conta gmail do bem conetado
+      2) Acesse o link: 'https://myaccount.google.com/u/2/permissions?pageId=none'
+      3) Em 'Apps de terceiros com acesso à conta' remova o acesso desse projeto.
+      4) Autorize o applicativo novamente no link: 
+      ${getAccessToken()}
+    `)
+  }
+  else {
+    console.log(`setou token`)
+    console.log(token)
+    oAuth2Client.setCredentials(token);
+    listFiles();
+  }
+
 }
 
 exports.uploadFile = function uploadFile(buffer, name, mimeType) {
   return new Promise(async (resolve, reject) => {
-    // Authorize a client with credentials, then call the Google Drive API.
-    authorize(_uploadFile);
 
-    function _uploadFile(auth) {
+    let bufferStream = new stream.PassThrough();
+    bufferStream.end(buffer);
 
-      let bufferStream = new stream.PassThrough();
-      bufferStream.end(buffer);
+    const drive = google.drive({ version: 'v3', oAuth2Client });
+    var fileMetadata = { name: `${Date.now()}${path.extname(name)}`, parents: ["1razNdx4zhm39LWWZ_xyfzLViMSkQVju-"] };
 
+    var media = {
+      mimeType,
+      body: bufferStream
+    };
 
-      const drive = google.drive({ version: 'v3', auth });
-      var fileMetadata = { name: `${Date.now()}${path.extname(name)}`, parents: ["1razNdx4zhm39LWWZ_xyfzLViMSkQVju-"] };
-
-      var media = {
-        mimeType,
-        body: bufferStream
-      };
-
-      drive.files.create({
-        resource: fileMetadata,
-        media: media,
-        fields: 'id'
-      }, function (err, res) {
-        if (err) {
-          // Handle error
-          console.log(err);
-          reject(err);
-        } else {
-          resolve(res.data.id)
-        }
-      });
-    }
+    drive.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: 'id'
+    }, function (err, res) {
+      if (err) {
+        // Handle error
+        console.log(err);
+        reject(err);
+      } else {
+        resolve(res.data.id)
+      }
+    });
   })
 
 

@@ -14,7 +14,11 @@ class TokenActions {
   static getToken() {
     return new Promise((resolve, reject) => {
       Token.findOne().then((result) => {
-        resolve(result);
+        if (result) {
+          return resolve(result.token);
+        } else {
+          return resolve(undefined);
+        }
       }).catch((err) => {
         reject(err);
       });
@@ -24,15 +28,18 @@ class TokenActions {
   static updateToken(token) {
     return new Promise((resolve, reject) => {
       Token.findOneAndUpdate({}, { token: token }).then((result) => {
-        if (!result)
-          Token.create(token).then((result) => {
-            resolve(result);
+        if (!result) {
+          Token.create({ token }).then((result) => {
+            return resolve(result);
           }).catch((err) => {
-            reject(err);
+            return reject(err);
           });
-        resolve(result);
+        }
+        else {
+          return resolve(result);
+        }
       }).catch((err) => {
-        reject(err);
+        return reject(err);
       });
     });
   }
