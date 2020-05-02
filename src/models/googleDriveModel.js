@@ -10,26 +10,41 @@ const SCOPES = ['https://www.googleapis.com/auth/drive'];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
+
 const TOKEN_PATH = 'token.json';
+
+const CREDENTIALS = {
+  client_id: process.env.OAUTH2_CLIENT_ID,
+  project_id: process.env.OAUTH2_PROJECT_ID,
+  auth_uri: process.env.OAUTH2_AUTH_URI,
+  token_uri: process.env.OAUTH2_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.OAUTH2_AUTH_PROVIDER,
+  client_secret: process.env.OAUTH2_CLIENT_SECRET,
+  redirect_uris: process.env.OAUTH2_REDIRECT_URIS.split(','),
+  javascript_origins: process.env.OAUTH2_JAVASCRIPT_ORIGINS.split(','),
+}
+
+console.log(CREDENTIALS)
 
 let oAuth2Client;
 
 /**
- * Create an OAuth2 client with the given credentials, and then execute the
+ * Create an OAuth2 client with the credentials, and then execute the
  * given callback function.
- * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(credentials, callback) {
-  console.log(credentials.installed)
-  const { client_secret, client_id, redirect_uris } = credentials.installed;
+function authorize(callback) {
+  const { client_secret, client_id, redirect_uris } = CREDENTIALS;
+
   oAuth2Client = new google.auth.OAuth2(
     client_id, client_secret, redirect_uris[0]);
 
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
-    if (err) return getAccessToken(oAuth2Client, callback);
-    oAuth2Client.setCredentials(JSON.parse(token));
+    const jsonToken = JSON.parse(token);
+    const jsonToken = { ...jsonToken, refresh_token: process.env.OAUTH2_REFRESH_TOKEN };
+
+    oAuth2Client.setCredentials(jsonToken);
     callback(oAuth2Client);
   });
 }
@@ -48,7 +63,8 @@ function getAccessToken(oAuth2Client, callback) {
   console.log('Authorize this app by visiting this url:', authUrl);
 }
 
-exports.validateCredentials = function validateCredentials(code, scope) {
+
+function validateCredentials(code, scope) {
   return new Promise((resolve, reject) => {
     oAuth2Client.getToken(code, (err, token) => {
       if (err) {
@@ -68,8 +84,9 @@ exports.validateCredentials = function validateCredentials(code, scope) {
       callback(oAuth2Client);
     });
   })
-
+  
 }
+exports.validateCredentials = validateCredentials;
 
 /**
  * Lists the names and IDs of up to 10 files.
@@ -96,20 +113,14 @@ function listFiles(auth) {
 
 module.exports.config = function config() {
   // Load client secrets from a local file.
-  fs.readFile('credentials.json', (err, content) => {
-    if (err) return console.log('Error loading client secret file:', err);
-    // Authorize a client with credentials, then call the Google Drive API.
-    authorize(JSON.parse(content), listFiles);
-  });
+  // Authorize a client with credentials, then call the Google Drive API.
+  authorize(listFiles);
 }
 
 exports.uploadFile = function uploadFile(buffer, name, mimeType) {
   return new Promise(async (resolve, reject) => {
-    fs.readFile('credentials.json', (err, content) => {
-      if (err) return console.log('Error loading client secret file:', err);
-      // Authorize a client with credentials, then call the Google Drive API.
-      authorize(JSON.parse(content), _uploadFile);
-    });
+    // Authorize a client with credentials, then call the Google Drive API.
+    authorize(_uploadFile);
 
     function _uploadFile(auth) {
 
