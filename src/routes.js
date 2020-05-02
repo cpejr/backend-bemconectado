@@ -49,7 +49,7 @@ routes.post('/session/:password', celebrate({
   sessionController.login
 );
 
-routes.post('/validateCredentials', driveController.validateCredentials)
+//routes.post('/validateCredentials', driveController.validateCredentials)
 
 //ADMIN
 

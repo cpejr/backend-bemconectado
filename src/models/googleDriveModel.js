@@ -11,8 +11,6 @@ const SCOPES = ['https://www.googleapis.com/auth/drive'];
 // created automatically when the authorization flow completes for the first
 // time.
 
-const TOKEN_PATH = 'token.json';
-
 const CREDENTIALS = {
   client_id: process.env.OAUTH2_CLIENT_ID,
   project_id: process.env.OAUTH2_PROJECT_ID,
@@ -29,71 +27,55 @@ console.log(CREDENTIALS)
 let oAuth2Client;
 
 /**
- * Create an OAuth2 client with the credentials, and then execute the
- * given callback function.
- * @param {function} callback The callback to call with the authorized client.
- */
-function authorize(callback) {
-  const { client_secret, client_id, redirect_uris } = CREDENTIALS;
-
-  oAuth2Client = new google.auth.OAuth2(
-    client_id, client_secret, redirect_uris[0]);
-
-  // Check if we have previously stored a token.
-  fs.readFile(TOKEN_PATH, (err, token) => {
-    const jsonToken = JSON.parse(token);
-    const jsonToken = { ...jsonToken, refresh_token: process.env.OAUTH2_REFRESH_TOKEN };
-
-    oAuth2Client.setCredentials(jsonToken);
-    callback(oAuth2Client);
-  });
-}
-
-/**
+ * Caso não tenha o refresh_token
+ * 
  * Get and store new token after prompting for user authorization, and then
  * execute the given callback with the authorized OAuth2 client.
  * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
  * @param {getEventsCallback} callback The callback for the authorized client.
  */
-function getAccessToken(oAuth2Client, callback) {
-  const authUrl = oAuth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: SCOPES,
-  });
-  console.log('Authorize this app by visiting this url:', authUrl);
-}
+// function getAccessToken(oAuth2Client, callback) {
+//   const authUrl = oAuth2Client.generateAuthUrl({
+//     access_type: 'offline',
+//     scope: SCOPES,
+//   });
+//   console.log('Authorize this app by visiting this url:', authUrl);
+// }
 
 
-function validateCredentials(code, scope) {
-  return new Promise((resolve, reject) => {
-    oAuth2Client.getToken(code, (err, token) => {
-      if (err) {
-        console.error(`Error retrieving access token(${token})`, err);
-        return reject(err);
-      }
-      oAuth2Client.setCredentials(token);
-      // Store the token to disk for later program executions
-      fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-        if (err) {
-          console.error(err);
-          return reject(err);
-        }
-        console.log('Token stored to', TOKEN_PATH);
-      });
-      resolve(TOKEN_PATH);
-      callback(oAuth2Client);
-    });
-  })
-  
-}
-exports.validateCredentials = validateCredentials;
+// function validateCredentials(code, scope) {
+//   return new Promise((resolve, reject) => {
+//     oAuth2Client.getToken(code, (err, token) => {
+//       if (err) {
+//         console.error(`Error retrieving access token(${token})`, err);
+//         return reject(err);
+//       }
+//       oAuth2Client.setCredentials(token);
+//       // Store the token to disk for later program executions
+//       fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
+//         if (err) {
+//           console.error(err);
+//           return reject(err);
+//         }
+//         console.log('Token stored to', TOKEN_PATH);
+//       });
+//       resolve(TOKEN_PATH);
+//       callback(oAuth2Client);
+//     });
+//   })
+
+// }
+
+
+// exports.validateCredentials = validateCredentials;
 
 /**
  * Lists the names and IDs of up to 10 files.
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function listFiles(auth) {
-  const drive = google.drive({ version: 'v3', auth });
+
+function listFiles() {
+  const drive = google.drive({ version: 'v3', oAuth2Client });
   drive.files.list({
     pageSize: 10,
     fields: 'nextPageToken, files(id, name)',
@@ -114,7 +96,16 @@ function listFiles(auth) {
 module.exports.config = function config() {
   // Load client secrets from a local file.
   // Authorize a client with credentials, then call the Google Drive API.
-  authorize(listFiles);
+
+  const { client_secret, client_id, redirect_uris } = CREDENTIALS;
+
+  oAuth2Client = new google.auth.OAuth2(
+    client_id, client_secret, redirect_uris[0]);
+
+  const jsonToken = { refresh_token: process.env.OAUTH2_REFRESH_TOKEN };
+  oAuth2Client.setCredentials(jsonToken);
+
+  listFiles();
 }
 
 exports.uploadFile = function uploadFile(buffer, name, mimeType) {
