@@ -1,14 +1,10 @@
-
-const result = require('dotenv').config();
-
-if (result.error) {
-  throw result.error
-}
+require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
 const { errors } = require('celebrate');
+require('./models/googleDriveModel').config();
 
 const app = express();
 

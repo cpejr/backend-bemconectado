@@ -5,13 +5,15 @@ const adminController = require('./controllers/adminController');
 const ongController = require('./controllers/ongController');
 const sessionController = require('./controllers/SessionController');
 const categController = require('./controllers/categController');
+const driveController = require('./controllers/driveController');
 const ongDB = require('../models/ongDB');
 const imageUpload = require('./middleware/imageUpload');
-
 
 //ONGS
 
 routes.post('/registerOng', imageUpload('imageFile'), ongController.create);
+
+// routes.put('/UpdateImage', imageUpload('imageFile'), ongController.create);
 
 routes.get('/ongs', celebrate({
   [Segments.QUERY]: Joi.object().keys({
@@ -40,12 +42,14 @@ routes.get('/ongsCount', celebrate({
 //SESSION
 
 routes.post('/session/:password', celebrate({
-    [Segments.PARAMS]: Joi.object().keys({
-      password: Joi.string().required()
-    })
-  }),
+  [Segments.PARAMS]: Joi.object().keys({
+    password: Joi.string().required()
+  })
+}),
   sessionController.login
 );
+
+routes.get('/validateCredentials', driveController.validateCredentials)
 
 //ADMIN
 
@@ -71,6 +75,7 @@ routes.put('/admin/:ongId', celebrate({
     cep: Joi.string().optional(),
     picpay: Joi.string().optional(),
     facebook: Joi.string().optional(),
+    instagram: Joi.string().optional(),
     ddd: Joi.string().optional(),
     phoneNumber: Joi.string().optional(),
     email: Joi.string().optional(),
