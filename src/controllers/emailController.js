@@ -1,18 +1,16 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  host: `${process.env.EMAIL_HOST}`,
-  port: `${process.env.EMAIL_PORT}`,
-  secure: false,
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  pool: true,
   auth: {
     user: `${process.env.EMAIL_USER}`,
     pass: `${process.env.EMAIL_PASS}`
   },
-  tls: {
-    rejectUnauthorized: false
-  }
 });
-
 
 class Email {
 
@@ -22,7 +20,6 @@ class Email {
       to: data.to,
       subject: data.subject,
       text: data.text,
-      attachments: data.attachments
     };
     return new Promise((resolve, reject) => {
       transporter.sendMail(config, (error, info) => {
@@ -34,12 +31,14 @@ class Email {
           console.log(`Email enviado ${info.response}`);
           resolve(info);
         }
-      });
-    });
+      })
+    }).catch(err => {
+      console.log("Falha no envio do email");
+      console.warn(err);
+    });;
   }
 
   static userWaitingForApproval(to, firstName) {
-
     const content = `Prezado(a) ${firstName},
     Você acabou de cadastrar na plataforma Bem Conectado. Aguarde a ativação do seu cadastro para que os usuários possam ver sua ONG.`;
     const subject = 'Bem Conectado: Aguardando ativação de cadastro';
@@ -48,11 +47,7 @@ class Email {
       subject: subject,
       text: content
     };
-    return new Promise((resolve) => {
-      Email.sendEmail(emailContent).then((info) => {
-        resolve(info);
-      });
-    });
+    return Email.sendEmail(emailContent);
   }
 
   static userApprovedEmail(to, firstName) {
@@ -65,11 +60,7 @@ class Email {
       subject: subject,
       text: content
     };
-    return new Promise((resolve) => {
-      Email.sendEmail(emailContent).then((info) => {
-        resolve(info);
-      });
-    });
+    return Email.sendEmail(emailContent);
   }
 
   static userRejectedEmail(to, fullname) {
@@ -82,11 +73,7 @@ class Email {
       subject: subject,
       text: content
     };
-    return new Promise((resolve) => {
-      Email.sendEmail(emailContent).then((info) => {
-        resolve(info);
-      });
-    });
+    return Email.sendEmail(emailContent);
   }
 
 }

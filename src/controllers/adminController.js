@@ -19,10 +19,9 @@ module.exports = {
       let id = request.params.ongId;
       let updateFields = request.body;
       
-
-      if (updateFields.approved){
-        let ongEmail = await Ong.getById(id).email;
-        emailController.userApprovedEmail(ongEmail);
+      if (updateFields.approved && updateFields.approved === true){
+        const _ong = await Ong.getById(id);
+        emailController.userApprovedEmail(_ong.email, _ong.name);
       }
 
       let result = await Ong.update(id, updateFields);
