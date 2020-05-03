@@ -62,7 +62,7 @@ exports.validateCredentials = validateCredentials;
  */
 
 function listFiles() {
-  const drive = google.drive({ version: 'v3', oAuth2Client });
+  const drive = google.drive({ version: 'v3', auth: oAuth2Client });
   drive.files.list({
     pageSize: 10,
     fields: 'nextPageToken, files(id, name)',
@@ -91,7 +91,7 @@ module.exports.config = async function config() {
 
   oAuth2Client.on('tokens', (newToken) => {
     // Store the token in to the database
-    Token.updateToken({...token, ...newToken}).catch(err => {
+    Token.updateToken({ ...token, ...newToken }).catch(err => {
       console.log('Failed to save the token in the database');
       console.log(err);
     });
@@ -111,7 +111,7 @@ module.exports.config = async function config() {
     `)
   }
   else {
-    console.log(`setou token`)
+    console.log(`achou token`)
     console.log(token)
     oAuth2Client.setCredentials(token);
     listFiles();
@@ -125,7 +125,7 @@ exports.uploadFile = function uploadFile(buffer, name, mimeType) {
     let bufferStream = new stream.PassThrough();
     bufferStream.end(buffer);
 
-    const drive = google.drive({ version: 'v3', oAuth2Client });
+    const drive = google.drive({ version: 'v3', auth: oAuth2Client });
     var fileMetadata = { name: `${Date.now()}${path.extname(name)}`, parents: ["1razNdx4zhm39LWWZ_xyfzLViMSkQVju-"] };
 
     var media = {
