@@ -87,7 +87,7 @@ module.exports.config = async function config() {
   const { client_secret, client_id, redirect_uris } = CREDENTIALS;
 
   oAuth2Client = new google.auth.OAuth2(
-    client_id, client_secret, redirect_uris[1]);
+    client_id, client_secret, redirect_uris[0]);
 
   oAuth2Client.on('tokens', (newToken) => {
     // Store the token in to the database

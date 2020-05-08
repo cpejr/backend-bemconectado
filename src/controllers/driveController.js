@@ -3,7 +3,9 @@ const { validateCredentials } = require('../models/googleDriveModel');
 module.exports = {
   async validateCredentials(request, response) {
     try {
-      const { code, scope } = request.query;
+      const code = decodeURI(request.query.code);
+      const scope = decodeURI(request.query.scope);
+
       await validateCredentials(code, scope)
 
       response.status(200).json({ response: 'ok' });
