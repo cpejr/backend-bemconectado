@@ -42,7 +42,11 @@ module.exports = {
       if (!exist) {
         let ong = request.body;
 
+        if (!request.file)
+          return response.status(400).json({ message: 'Por favor selecione uma logo' })
+
         const { originalname, buffer, mimetype } = request.file;
+
 
         const imageSrc = await uploadFile(buffer, originalname, mimetype)
 
