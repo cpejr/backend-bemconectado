@@ -1,6 +1,4 @@
 const Ong = require('../../models/ongDB')
-const mongoose = require('mongoose');
-const fs = require('fs');
 const { Joi } = require('celebrate');
 const emailController = require('./emailController')
 const { uploadFile } = require('../models/googleDriveModel');

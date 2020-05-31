@@ -6,6 +6,7 @@ const ongController = require('./controllers/ongController');
 const sessionController = require('./controllers/SessionController');
 const categController = require('./controllers/categController');
 const driveController = require('./controllers/driveController');
+const counterController = require('./controllers/counterController');
 const ongDB = require('../models/ongDB');
 const imageUpload = require('./middleware/imageUpload');
 
@@ -37,6 +38,15 @@ routes.get('/ongsCount', celebrate({
   }),
 }),
   ongController.totalApproved
+);
+
+//COUNT
+routes.post('/registerAcess/:id', celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    id: Joi.string().required(),
+  }),
+}),
+  counterController.registerCount,
 );
 
 //SESSION
