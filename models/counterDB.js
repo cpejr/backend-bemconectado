@@ -1,10 +1,13 @@
-const mongoose = require('mongoose');
-const moment = require('moment');
+const mongoose = require("mongoose");
+const moment = require("moment");
 
-const countSchema = new mongoose.Schema({
-  id: { type: mongoose.ObjectId, ref: 'ongs' },
-  count: Number
-}, { _id: false })
+const countSchema = new mongoose.Schema(
+  {
+    id: { type: mongoose.ObjectId, ref: "ongs" },
+    count: Number,
+  },
+  { _id: false }
+);
 
 const counterSchema = new mongoose.Schema({
   date: {
@@ -12,10 +15,10 @@ const counterSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  ongs: [countSchema]
+  ongs: [countSchema],
 });
 
-const Counter = mongoose.model('Counter', counterSchema);
+const Counter = mongoose.model("Counter", counterSchema);
 
 function getMonday(d) {
   d = new Date(d);
@@ -25,7 +28,6 @@ function getMonday(d) {
 }
 
 class CounterActions {
-
   static async registerCount(date, ongId) {
     try {
       //Verificar se já exite a semana
@@ -35,60 +37,54 @@ class CounterActions {
 
       if (!index || index >= 0) {
         week.ongs[index].count += 1;
-      }
-      else {
+      } else {
         week.ongs.push({ id: ongId, count: 1 });
       }
 
       return await this.updateWeek(week);
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
-
-
-  };
+  }
 
   static async updateWeek(week) {
     const filter = {
       _id: week._id,
-    }
+    };
 
     try {
-      const response = await Counter.findOneAndUpdate(
-        filter,
-        week,
-      )
+      const response = await Counter.findOneAndUpdate(filter, week);
       return response;
     } catch (error) {
       return error;
     }
-  };
+  }
 
   static async findWeekOrCreate(date) {
     const refDate = moment.utc(getMonday(date).toDateString());
 
     const filter = {
       date: refDate,
-    }
+    };
 
     const setOnInsert = {
       date: refDate,
       ongs: [],
-    }
+    };
 
     const options = {
       upsert: true,
       new: true,
-    }
+    };
 
     try {
       const response = await Counter.findOneAndUpdate(
         filter,
         {
-          $setOnInsert: setOnInsert
+          $setOnInsert: setOnInsert,
         },
         options
-      )
+      );
       return response;
     } catch (error) {
       return error;
@@ -101,13 +97,13 @@ class CounterActions {
     const filter = {
       date: refDate,
       "ongs.id": ongId,
-    }
+    };
 
     const update = {
       $inc: {
-        "ongs.$.count": 1
-      }
-    }
+        "ongs.$.count": 1,
+      },
+    };
     try {
       const response = await Counter.findOneAndUpdate(filter, update);
       return response;
@@ -115,6 +111,25 @@ class CounterActions {
       return error;
     }
   }
+
+  static async getRecentCount() {
+    try {
+      const data = await Counter.find().limit(4).sort({ date: -1 });
+
+      const response = {};
+      data.forEach((week) => {
+        week.ongs.forEach((ong) => {
+          if (!response[ong.id]) response[ong.id] = { count: 0 };
+
+          response[ong.id].count += ong.count;
+        });
+      });
+
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
 }
 
-module.exports = CounterActions
+module.exports = CounterActions;
