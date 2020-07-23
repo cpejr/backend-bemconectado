@@ -4,7 +4,7 @@ const readline = require('readline');
 const { google } = require('googleapis');
 const stream = require('stream');
 const path = require("path");
-const Token = require("../../models/tokenDB");
+const Token = require("./tokenModel");
 
 let oAuth2Client;
 let token;

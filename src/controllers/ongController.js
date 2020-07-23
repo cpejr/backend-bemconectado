@@ -1,7 +1,7 @@
-const Ong = require('../../models/ongDB')
+const Ong = require('../models/ongModel')
 const { Joi } = require('celebrate');
 const emailController = require('./emailController')
-const { uploadFile } = require('../models/googleDriveModel');
+const { uploadFile } = require('../models/gDriveModel');
 
 
 module.exports = {

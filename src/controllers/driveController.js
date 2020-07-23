@@ -1,4 +1,4 @@
-const { validateCredentials } = require('../models/googleDriveModel');
+const { validateCredentials } = require('../models/gDriveModel');
 
 module.exports = {
   async validateCredentials(request, response) {

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Categ = require('./categDB');
+const Categ = require('./categModel');
 
 const ong = new mongoose.Schema({
   name: {
