@@ -1,5 +1,5 @@
-const Categ = require('../../models/categDB');
-const Ong = require('../../models/ongDB');
+const Categ = require('../models/categModel');
+const Ong = require('../models/ongModel');
 
 module.exports = {
 

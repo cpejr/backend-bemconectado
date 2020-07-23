@@ -1,4 +1,4 @@
-const Counter = require("../../models/counterDB");
+const Counter = require("../models/counterModel");
 
 module.exports = {
   async registerCount(request, response) {

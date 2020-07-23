@@ -1,4 +1,4 @@
-const Ong = require('../../models/ongDB')
+const Ong = require('../models/ongModel')
 const emailController = require('./emailController')
 
 module.exports = {

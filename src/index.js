@@ -4,7 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
 const { errors } = require('celebrate');
-require('./models/googleDriveModel').config();
+require('./models/gDriveModel').config();
 const app = express();
 
 const corsOptions = {
