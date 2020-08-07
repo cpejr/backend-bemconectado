@@ -8,8 +8,11 @@ module.exports = {
       // Autenticate user
       const { email, password } = request.body;
 
-      if (password !== process.env.PASSWORD && email !== process.env.ADMIN_EMAIL) {
-        return response.status(400).json({ error: 'Invalid password' }); //Não voltaria isso aqui quando a gente criar login de ONG
+      if (password !== process.env.PASSWORD) {
+        return response.status(400).json({ error: 'Invalid password!' }); 
+      }
+      if (email !== process.env.ADMIN_EMAIL) {
+        return response.status(400).json({ error: 'Invalid credentials!' }); 
       }
 
       const accessToken = jwt.sign({}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
