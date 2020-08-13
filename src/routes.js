@@ -1,5 +1,5 @@
 const express = require("express");
-const { celebrate, Segments, Joi } = require("celebrate");
+const { celebrate } = require("celebrate");
 const routes = express.Router();
 
 const adminController = require("./controllers/adminController");
