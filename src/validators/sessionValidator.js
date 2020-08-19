@@ -3,7 +3,8 @@ const { Segments, Joi } = require('celebrate');
 let sessionValidator = new Object();
 
 sessionValidator.login = {
-    [Segments.PARAMS]: Joi.object().keys({
+    [Segments.BODY]: Joi.object().keys({
+        email: Joi.string().required(),
         password: Joi.string().required(),
     }),
 }

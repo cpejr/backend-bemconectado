@@ -33,7 +33,7 @@ routes.post("/registerAcess/:id", celebrate(counterValidator.registerCount), cou
 routes.get("/monthViews", counterController.getRecentCount);
 
 //SESSION
-routes.post("/session/:password", celebrate(sessionValidator.login), sessionController.login);
+routes.post("/session", celebrate(sessionValidator.login), sessionController.login);
 routes.get("/validateCredentials", driveController.validateCredentials);
 
 //ADMIN
