@@ -17,7 +17,9 @@ module.exports = {
 
       const accessToken = jwt.sign({}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
 
-      return response.json({ accessToken: accessToken });
+      const user = {type: 'admin'};
+
+      return response.json({ accessToken: accessToken, user });
     } catch (err) {
       console.log(err);
       return response.status(500).json({ error: 'Fatal error while validating login' })
