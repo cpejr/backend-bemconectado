@@ -8,7 +8,7 @@ module.exports = {
       // Autenticate user
       const { email, password } = request.body;
 
-      if (password !== process.env.PASSWORD) {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return response.status(400).json({ error: 'Invalid password!' }); 
       }
       if (email !== process.env.ADMIN_EMAIL) {
