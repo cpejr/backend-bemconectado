@@ -1,44 +1,19 @@
-const Ong = require('../models/ongModel')
+const Ong = require('../models/ongModel');
 const { Joi } = require('celebrate');
-const emailController = require('./emailController')
+const emailController = require('./emailController');
 const { uploadFile } = require('../models/gDriveModel');
-
+const Firebase = require('../models/firebaseModel');
 
 module.exports = {
   async create(request, response) {
-
-    const schema = Joi.object({
-      name: Joi.string().required(),
-      cnpj: Joi.string().required(),
-      state: Joi.string().required(),
-      city: Joi.string().required(),
-      neighborhood: Joi.string().required(),
-      street: Joi.string().required(),
-      number: Joi.string().required(),
-      cep: Joi.string().required(),
-      email: Joi.string().required(),
-      complement: Joi.string().optional(),
-      picpay: Joi.string().optional(),
-      facebook: Joi.string().optional(),
-      instagram: Joi.string().optional(),
-      ddd: Joi.string().optional(),
-      phoneNumber: Joi.string().optional(),
-      site: Joi.string().optional(),
-      branch: Joi.string().optional(),
-      bank: Joi.string().optional(),
-      bankAccount: Joi.string().optional(),
-      description: Joi.string().optional(),
-      imageSrc: Joi.string().optional(),
-    })
-
-    schema.validate(request.body);
-
     try {
-      let { name, cnpj } = request.body;
+      let { name, cnpj, password, email } = request.body;
       const exist = await Ong.checkExistence(name, cnpj)
       console.log(exist);
       if (!exist) {
         let ong = request.body;
+        const id_firebase = await Firebase.createNewOng(email, password);
+        ong.firebase = id_firebase;
 
         if (!request.file)
           return response.status(400).json({ message: 'Por favor selecione uma logo' })

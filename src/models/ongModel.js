@@ -94,6 +94,10 @@ const ong = new mongoose.Schema({
   categs: {
     type: String,
     required: false,
+  },
+  firebase: {
+    type: String,
+    required: true,
   }
 },
   { timestamps: true }

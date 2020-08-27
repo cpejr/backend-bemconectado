@@ -23,7 +23,7 @@ const ongDB = require("./models/ongModel");
 const imageUpload = require("./middleware/imageUpload");
 
 //ONGS
-routes.post("/ongs", imageUpload("imageFile"), ongController.create);
+routes.post("/ongs", imageUpload("imageFile"), celebrate(ongValidator.create), ongController.create);
 //routes.put('/UpdateImage', imageUpload('imageFile'), ongController.create);
 routes.get("/ongs", celebrate(ongValidator.index), ongController.index);
 routes.get("/ongsCount", celebrate(ongValidator.totalApproved), ongController.totalApproved);
@@ -39,7 +39,7 @@ routes.get("/validateCredentials", driveController.validateCredentials);
 //ADMIN
 routes.get("/admin", celebrate(adminValidator.index), sessionController.authenticateToken, adminController.index);
 routes.put("/admin/:ongId", celebrate(adminValidator.update), sessionController.authenticateToken, adminController.update);
-routes.delete("/admin/:ongId",celebrate(adminValidator.delete), sessionController.authenticateToken, ongController.delete);
+routes.delete("/admin/:ongId", celebrate(adminValidator.delete), sessionController.authenticateToken, ongController.delete);
 
 //CATEGORY
 routes.get("/categ", celebrate(categValidator.index), categController.index);
