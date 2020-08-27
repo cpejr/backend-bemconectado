@@ -32,7 +32,7 @@ routes.get("/ongsCount", celebrate(ongValidator.totalApproved), ongController.to
 //COUNT
 routes.post("/registerAcess/:id", celebrate(counterValidator.registerCount), counterController.registerCount);
 routes.get("/monthViews", counterController.getRecentCount);
-routes.get("/views/:id", celebrate(counterValidator.getOngCountByDate), counterController.getOngCountByDate);
+routes.get("/views/:id", celebrate(counterValidator.getOngCount), counterController.getOngCount);
 
 //SESSION
 routes.post("/session", celebrate(sessionValidator.login), sessionController.login);

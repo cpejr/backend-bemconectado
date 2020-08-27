@@ -23,12 +23,18 @@ module.exports = {
     }
   },
   
-  async getOngCountByDate(request, response){
+  async getOngCount(request, response){
     try{
       const {year, month} = request.query;
       const {id} = request.params;
+      let result;
 
-      const result = await Counter.getOngCountByDate(id, month, year);
+      if(year && month){
+        result = await Counter.getOngCountByDate(id, month, year);
+      }
+      else{
+        result = await Counter.getOngCountFull(id);
+      }
       return response.json(result);
     } catch(error) {
       console.log(error);
