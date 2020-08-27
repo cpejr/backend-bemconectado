@@ -1,4 +1,5 @@
 const firebase = require("firebase/app");
+require("firebase/auth")
 
 const firebaseConfig = {
     apiKey: process.env.FIREBASE_API_KEY,
@@ -15,10 +16,19 @@ module.exports = {
     async createNewOng(email, password) {
         try {
             const result = await firebase.auth().createUserWithEmailAndPassword(email, password)
-            return result;
+            return result.user.uid;
         }
         catch (error) {
             console.log(error);
         }
-    }
+    },
+    async createSession(email, password) {
+        try {
+            const result = await firebase.auth().signInWithEmailAndPassword(email, password)
+            return result.user.uid;
+        }
+        catch (error) {
+            console.log(error);
+        }
+    },
 }

@@ -143,6 +143,16 @@ class OngActions {
     });
   }
 
+  static getByFirebaseId(id_firebase) {
+    return new Promise((resolve, reject) => {
+      Ong.findOne({ firebase: id_firebase }).then((result) => {
+        resolve(result);
+      }).catch((error) => {
+        console.log(error);
+        reject(error);
+      });
+    });
+  }
 
   static getAprovedOngs(page, city, state, name, categs) {
     return new Promise(async (resolve, reject) => {

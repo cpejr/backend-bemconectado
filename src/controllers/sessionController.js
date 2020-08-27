@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const Firebase = require('../models/firebaseModel');
+const Ong = require('../models/ongModel');
 
 module.exports = {
 
@@ -8,18 +10,21 @@ module.exports = {
       // Autenticate user
       const { email, password } = request.body;
 
-      if (password !== process.env.ADMIN_PASSWORD) {
-        return response.status(400).json({ error: 'Invalid password!' }); 
+      if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+        const accessToken = jwt.sign({}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
+
+        const user = { type: 'admin' };
+
+        return response.json({ accessToken: accessToken, user });
       }
-      if (email !== process.env.ADMIN_EMAIL) {
-        return response.status(400).json({ error: 'Invalid credentials!' }); 
+      else {
+        const id_firebase = await Firebase.createSession(email, password);
+        const user = await Ong.getByFirebaseId(id_firebase);
+        user.type = "user";
+        const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
+        return response.json({ accessToken: accessToken, user });
       }
 
-      const accessToken = jwt.sign({}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
-
-      const user = {type: 'admin'};
-
-      return response.json({ accessToken: accessToken, user });
     } catch (err) {
       console.log(err);
       return response.status(500).json({ error: 'Fatal error while validating login' })

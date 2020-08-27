@@ -12,9 +12,13 @@ module.exports = {
       console.log(exist);
       if (!exist) {
         let ong = request.body;
-        const id_firebase = await Firebase.createNewOng(email, password);
-        ong.firebase = id_firebase;
-
+        try {
+          const id_firebase = await Firebase.createNewOng(email, password);
+          ong.firebase = id_firebase;
+        }
+        catch (error) {
+          console.log(error);
+        }
         if (!request.file)
           return response.status(400).json({ message: 'Por favor selecione uma logo' })
 
