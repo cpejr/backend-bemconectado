@@ -18,14 +18,8 @@ module.exports = {
         return response.json({ accessToken: accessToken, user });
       }
       else {
-        const id_firebase = new Promise((resolve,reject)=>{
-          firebase.createSession(email,password).then(result=>{
-            resolve(result);
-          }).catch(error=>{
-            console.log(error);
-            reject(error);
-          })
-        })
+        const id_firebase = await Firebase.createSession(email, password)
+
         const user = await Ong.getByFirebaseId(id_firebase);
         user.type = "user";
         const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
