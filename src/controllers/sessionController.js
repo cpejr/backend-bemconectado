@@ -19,11 +19,15 @@ module.exports = {
       }
       else {
         const id_firebase = await Firebase.createSession(email, password)
-
-        const user = await Ong.getByFirebaseId(id_firebase);
-        user.type = "user";
-        const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
-        return response.json({ accessToken: accessToken, user });
+        if (id_firebase !== undefined) {
+          const user = await Ong.getByFirebaseId(id_firebase);
+          user.type = "user";
+          const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
+          return response.json({ accessToken: accessToken, user });
+        }
+        else {
+          return response.status(401).json({ message: 'Invalid credentials' })
+        }
       }
 
     } catch (err) {

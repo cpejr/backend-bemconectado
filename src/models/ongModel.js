@@ -145,7 +145,7 @@ class OngActions {
 
   static getByFirebaseId(id_firebase) {
     return new Promise((resolve, reject) => {
-      Ong.findOne({ firebase: id_firebase }).then((result) => {
+      Ong.findOne({ firebase: id_firebase, approved: true }).then((result) => {
         resolve(result);
       }).catch((error) => {
         console.log(error);
