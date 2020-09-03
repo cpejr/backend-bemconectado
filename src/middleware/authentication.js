@@ -1,4 +1,5 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
+
 
 module.exports = {
     async authenticateToken(request, response, next) {
@@ -10,8 +11,9 @@ module.exports = {
         if (!/^Bearer$/i.test(scheme))
             return response.status(401).json({ error: 'Token badformatted' });
 
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-            if (err) return response.status(403).json({ verified: false, user: {}, error: err });
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err) => {
+            if (err) return response.status(403).json({ error: 'Invalid authorization token' });
+
             next();
         });
     }

@@ -23,6 +23,7 @@ const {authenticateToken} = require("./middleware/authentication");
 
 const ongDB = require("./models/ongModel");
 const imageUpload = require("./middleware/imageUpload");
+const authentication = require("./middleware/authentication");
 
 //ONGS
 routes.post("/ongs", imageUpload("imageFile"), celebrate(ongValidator.create), ongController.create);
@@ -33,6 +34,7 @@ routes.get("/ongsCount", celebrate(ongValidator.totalApproved), ongController.to
 //COUNT
 routes.post("/registerAcess/:id", celebrate(counterValidator.registerCount), counterController.registerCount);
 routes.get("/monthViews", counterController.getRecentCount);
+routes.get("/views/:id", celebrate(counterValidator.getOngCount), counterController.getOngCount);
 
 //SESSION
 routes.post("/session", celebrate(sessionValidator.login), sessionController.login);

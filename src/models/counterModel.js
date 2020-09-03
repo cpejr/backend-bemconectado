@@ -130,6 +130,75 @@ class CounterActions {
       return error;
     }
   }
+
+  static async getOngCountByDate(ongId, month, year) {
+    try {
+      const response = await Counter.aggregate(
+        [{
+          $addFields: {
+            "month": { $month: '$date' },
+            "year": { $year: '$date' },
+          }
+        }, {
+          $match: {
+            month: month,
+            year: year,
+            ongs: {
+              $elemMatch: {
+                id: mongoose.Types.ObjectId(ongId),
+              }
+            }
+          }
+        }, {
+          $addFields: {
+            index: { $indexOfArray: ["$ongs.id", mongoose.Types.ObjectId(ongId)] },
+          }
+        }, {
+          $addFields: {
+            selectedOng: { $arrayElemAt: ["$ongs", "$index"] }
+          }
+        }, {
+          $project: {
+            ongs: 0
+          }
+        }]
+      );;
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  static async getOngCountFull(ongId) {
+    try {
+      const response = await Counter.aggregate([
+          {
+            $match: {
+              ongs: {
+                $elemMatch: {
+                  id: mongoose.Types.ObjectId(ongId),
+                }
+              }
+            }
+          }, {
+            $addFields: {
+              index: { $indexOfArray: ["$ongs.id", mongoose.Types.ObjectId(ongId)] },
+            }
+          }, {
+            $addFields: {
+              selectedOng: { $arrayElemAt: ["$ongs", "$index"] }
+            }
+          }, {
+            $project: {
+              ongs: 0
+            }
+          }]
+      );;
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
 }
 
 module.exports = CounterActions;

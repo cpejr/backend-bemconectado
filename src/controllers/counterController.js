@@ -22,4 +22,23 @@ module.exports = {
       return response.status(500).json({ error: error });
     }
   },
+  
+  async getOngCount(request, response){
+    try{
+      const {year, month} = request.query;
+      const {id} = request.params;
+      let result;
+
+      if(year && month){
+        result = await Counter.getOngCountByDate(id, month, year);
+      }
+      else{
+        result = await Counter.getOngCountFull(id);
+      }
+      return response.json(result);
+    } catch(error) {
+      console.log(error);
+      return response.status(500).json({ error: error });
+    }
+  }
 };
