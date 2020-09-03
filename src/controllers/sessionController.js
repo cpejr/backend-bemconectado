@@ -11,14 +11,14 @@ module.exports = {
       const { email, password } = request.body;
 
       if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-        const accessToken = jwt.sign({}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
-
         const user = { type: 'admin' };
+
+        const accessToken = jwt.sign({user}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
 
         return response.json({ accessToken: accessToken, user });
       }
       else {
-        const id_firebase = await Firebase.createSession(email, password)
+        const id_firebase = await Firebase.createSession(email, password);
         if (id_firebase !== undefined) {
           const user = await Ong.getByFirebaseId(id_firebase);
           user.type = "user";
@@ -36,7 +36,7 @@ module.exports = {
     }
   },
 
-  async authenticateToken(request, response, next) {
+  async verifyToken(request, response, next) {
     const authHeader = request.headers['authorization']
     const [scheme, token] = authHeader && authHeader.split(' ');
 
@@ -47,7 +47,7 @@ module.exports = {
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
       if (err) return response.status(403).json({ verified: false, user: {}, error: err });
-      return response.status(200).json({ verified: true, user: user });
+      return response.status(200).json({ verified: true, user: user.user });
       next();
     });
   }

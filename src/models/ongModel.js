@@ -221,6 +221,7 @@ class OngActions {
   static getWaitingAprovement() {
     return new Promise((resolve, reject) => {
       Ong.find({ approved: false }).then((results) => {
+        console.log(results);
         resolve(results);
       }).catch((error) => {
         console.log(error);

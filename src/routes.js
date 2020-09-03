@@ -19,6 +19,8 @@ const ongValidator = require("./validators/ongValidator");
 const sessionController = require("./controllers/sessionController");
 const sessionValidator = require("./validators/sessionValidator");
 
+const {authenticateToken} = require("./middleware/authentication");
+
 const ongDB = require("./models/ongModel");
 const imageUpload = require("./middleware/imageUpload");
 
@@ -35,17 +37,18 @@ routes.get("/monthViews", counterController.getRecentCount);
 //SESSION
 routes.post("/session", celebrate(sessionValidator.login), sessionController.login);
 routes.get("/validateCredentials", driveController.validateCredentials);
+routes.get("/verify", sessionController.verifyToken);
 
 //ADMIN
-routes.get("/admin", celebrate(adminValidator.index), sessionController.authenticateToken, adminController.index);
-routes.put("/admin/:ongId", celebrate(adminValidator.update), sessionController.authenticateToken, adminController.update);
-routes.delete("/admin/:ongId", celebrate(adminValidator.delete), sessionController.authenticateToken, ongController.delete);
+routes.get("/admin", celebrate(adminValidator.index), authenticateToken, adminController.index);
+routes.put("/admin/:ongId", celebrate(adminValidator.update), authenticateToken, adminController.update);
+routes.delete("/admin/:ongId", celebrate(adminValidator.delete), authenticateToken, ongController.delete);
 
 //CATEGORY
 routes.get("/categ", celebrate(categValidator.index), categController.index);
-routes.post("/categ", celebrate(categValidator.create), sessionController.authenticateToken, categController.create);
-routes.put("/categ", celebrate(categValidator.categorize), sessionController.authenticateToken, categController.categorize);
-routes.delete("/categ/:name", celebrate(categValidator.delete), sessionController.authenticateToken, categController.delete);
+routes.post("/categ", celebrate(categValidator.create), authenticateToken, categController.create);
+routes.put("/categ", celebrate(categValidator.categorize), authenticateToken, categController.categorize);
+routes.delete("/categ/:name", celebrate(categValidator.delete), authenticateToken, categController.delete);
 
 //CATEGORY SEARCH
 //Will find all categories of an Ong with its ID as a param.
