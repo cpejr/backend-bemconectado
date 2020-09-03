@@ -6,7 +6,6 @@ module.exports = {
   async index(request, response) {
     try {
       let result = await Ong.getWaitingAprovement();
-
       return response.json(result);
     } catch (error) {
       console.log(error);

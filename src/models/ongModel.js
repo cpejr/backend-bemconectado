@@ -94,6 +94,10 @@ const ong = new mongoose.Schema({
   categs: {
     type: String,
     required: false,
+  },
+  firebase: {
+    type: String,
+    required: true,
   }
 },
   { timestamps: true }
@@ -139,6 +143,16 @@ class OngActions {
     });
   }
 
+  static getByFirebaseId(id_firebase) {
+    return new Promise((resolve, reject) => {
+      Ong.findOne({ firebase: id_firebase, approved: true }).then((result) => {
+        resolve(result);
+      }).catch((error) => {
+        console.log(error);
+        reject(error);
+      });
+    });
+  }
 
   static getAprovedOngs(page, city, state, name, categs) {
     return new Promise(async (resolve, reject) => {
