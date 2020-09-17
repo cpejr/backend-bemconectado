@@ -20,7 +20,7 @@ module.exports = {
       else {
         const id_firebase = await Firebase.createSession(email, password);
         if (id_firebase !== undefined) {
-          const user = await Ong.getByFirebaseId(id_firebase);
+          let user = await Ong.getByFirebaseId(id_firebase);
           user.type = "user";
           const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
           return response.json({ accessToken: accessToken, user });
