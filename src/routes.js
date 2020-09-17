@@ -27,7 +27,7 @@ const authentication = require("./middleware/authentication");
 
 //ONGS
 routes.post("/ongs", imageUpload("imageFile"), celebrate(ongValidator.create), ongController.create);
-//routes.put('/UpdateImage', imageUpload('imageFile'), ongController.create);
+routes.put("/ong/:id", celebrate(ongValidator.update), authenticateToken, ongController.update);
 routes.get("/ongs", celebrate(ongValidator.index), ongController.index);
 routes.get("/ongsCount", celebrate(ongValidator.totalApproved), ongController.totalApproved);
 

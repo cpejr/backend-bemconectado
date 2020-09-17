@@ -29,6 +29,39 @@ ongValidator.create = {
     })
 }
 
+// Update 
+ongValidator.update = {
+    [Segments.HEADERS]: Joi.object({
+        authorization: Joi.string().required(),
+    }).unknown(),
+    [Segments.PARAMS]:Joi.object().keys({
+        id: Joi.string().required(),
+    }),
+    [Segments.BODY]: Joi.object().keys({
+        name: Joi.string().optional(),
+        password: Joi.string().optional(),
+        cnpj: Joi.string().optional(),
+        state: Joi.string().optional(),
+        city: Joi.string().optional(),
+        neighborhood: Joi.string().optional(),
+        street: Joi.string().optional(),
+        number: Joi.string().optional(),
+        cep: Joi.string().optional(),
+        email: Joi.string().optional(),
+        complement: Joi.string().optional(),
+        picpay: Joi.string().optional(),
+        facebook: Joi.string().optional(),
+        instagram: Joi.string().optional(),
+        ddd: Joi.string().optional(),
+        phoneNumber: Joi.string().optional(),
+        site: Joi.string().optional(),
+        branch: Joi.string().optional(),
+        bank: Joi.string().optional(),
+        bankAccount: Joi.string().optional(),
+        description: Joi.string().optional(),
+    })
+}
+
 ongValidator.index = {
     [Segments.QUERY]: Joi.object().keys({
         page: Joi.number().optional(),

@@ -3,6 +3,7 @@ const { Joi } = require('celebrate');
 const emailController = require('./emailController');
 const { uploadFile } = require('../models/gDriveModel');
 const Firebase = require('../models/firebaseModel');
+const { update } = require('../models/ongModel');
 
 module.exports = {
   async create(request, response) {
@@ -65,6 +66,24 @@ module.exports = {
     } catch (error) {
       console.log(error);
       return response.status(500).json({ error: error });
+    }
+  },
+
+  async update(request, response){
+    try{
+
+      const { id } = request.params;
+      const newOngData = request.body;
+
+      let result = await Ong.update(id, newOngData);
+
+      console.log(request.body);
+
+      return response.status(200).json(result);
+
+    } catch(error){
+      console.log(error);
+      return response.status(500).json({ message: 'Internal server when trying to update ONG.' });
     }
   },
 
