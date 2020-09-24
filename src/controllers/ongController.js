@@ -70,14 +70,12 @@ module.exports = {
   },
 
   async update(request, response){
+    const { id } = request.params;
+    const newOngData = request.body;
+    
     try{
-
-      const { id } = request.params;
-      const newOngData = request.body;
-
+      console.log("Request body! ", request.body);
       let result = await Ong.update(id, newOngData);
-
-      console.log(request.body);
 
       return response.status(200).json(result);
 
