@@ -231,7 +231,8 @@ class OngActions {
 
   static update(id, newFields) {
     return new Promise((resolve, reject) => {
-      Ong.findOneAndUpdate({ _id: id }, newFields).then((results) => {
+      Ong.findOneAndUpdate({ _id: id }, newFields,{new:true}).then((results) => {
+        console.log("oi",results)
         resolve(results);
       }).catch((error) => {
         console.log(error);

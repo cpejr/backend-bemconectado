@@ -74,7 +74,6 @@ module.exports = {
     const newOngData = request.body;
     
     try{
-      console.log("Request body! ", request.body);
       let result = await Ong.update(id, newOngData);
 
       return response.status(200).json(result);
