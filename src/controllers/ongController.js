@@ -4,6 +4,7 @@ const emailController = require('./emailController');
 const { uploadFile } = require('../models/gDriveModel');
 const Firebase = require('../models/firebaseModel');
 const { update } = require('../models/ongModel');
+const jwt = require('jsonwebtoken');
 
 module.exports = {
   async create(request, response) {
@@ -69,16 +70,19 @@ module.exports = {
     }
   },
 
-  async update(request, response){
+  async update(request, response) {
     const { id } = request.params;
     const newOngData = request.body;
-    
-    try{
-      let result = await Ong.update(id, newOngData);
 
-      return response.status(200).json(result);
+    try {
+      let user = await Ong.update(id, newOngData);
 
-    } catch(error){
+      user.type = "user";
+      const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
+      //Needs to send updated token
+
+      return response.status(200).json({ accessToken: accessToken, user });
+    } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Internal server when trying to update ONG.' });
     }
