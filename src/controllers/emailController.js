@@ -49,15 +49,59 @@ class Email {
     return Email.sendEmail(emailContent);
   }
 
-  static userApprovedEmail(to, firstName) {
+  static userApprovedEmail(to, firstName, password) {
     console.log('Cadastro de usuário aprovado');
-    const content = `Prezado(a) ${firstName},
-    Seu cadastro foi realizado e aprovado com sucesso. Agora sua ONG está visível ao público!`;
-    const subject = 'Bem Conectado: Cadastro ativado com sucesso';
+    const content = `
+    Olá ${firstName}, \n
+    O processo de análise foi concluido e nossa equipe acaba de efetuar a aprovação da sua iniciativa. \n
+    A partir de agora sua ONG está visível ao público na plataforma do Bem Conectado.\n
+
+    Além disso, com sua iniciativa aprovada você terá acesso ao painél de administração \n
+    Nele você poderá editar informações e ter acesso aos dados estatísticos de visita na página de sua iniciativa.\n
+
+    Para ver o painel acesse https://bem-conectado.com/login \n
+    Dados de login: \n\n
+    Email: ${to} \n
+    Senha: ${password} (gerada automaticamente) \n
+    
+    Você poderá alterar a sua senha fazendo uso da funcionalidade "Esqueci minha senha" no painél de login.\n
+    Aproveite! \n\n
+
+    Atenciosamente, \n
+    Equipe do Bem Conectado. \n
+    `;
+
+    const contentHtml = `
+    <p>Olá ${firstName},</p>
+    <p>O processo de análise foi concluido e nossa equipe acaba de efetuar a aprovação da sua iniciativa.</p>
+    <p>A partir de agora sua ONG está visível ao público na plataforma do Bem Conectado.</p>
+    <p></p>
+    <p>Além disso, com sua iniciativa aprovada você terá acesso ao painél de administração</p>
+    <p>Nele você poderá editar informações e ter acesso aos dados estatísticos de visita na página de sua iniciativa.</p>
+    <p></p>
+    <p>Para ver o painel acesse https://bem-conectado.com/login</p>
+    <p>Dados de login:</p>
+    <p>Email: ${to}</p>
+    <p>Senha: ${password} (gerada automaticamente)</p>
+    <p> </p>
+    <p>Você poderá alterar a sua senha fazendo uso da funcionalidade "Esqueci minha senha" no painél de login.\n </p>
+    <p>Aproveite!</p>
+    <p></p>
+    <p>Atenciosamente,</p>
+    <p>Equipe do Bem Conectado.</p>
+    <img src="cid:logo@cid" />
+    `;
+    const subject = 'Bem Conectado: Cadastro aprovado';
     const emailContent = {
       to: to,
       subject: subject,
-      text: content
+      text: content,
+      html: contentHtml,
+      attachments: [{
+        filename: 'logo300px.png',
+        path: path.join(__dirname, '../../public/images/logo300px.png'),
+        cid: 'logo@cid'
+      }]
     };
     return Email.sendEmail(emailContent);
   }
@@ -110,8 +154,8 @@ class Email {
       text: content,
       html: contentHtml,
       attachments: [{
-        filename: 'logo.png',
-        path: path.join(__dirname, '../../public/images/logo.png'),
+        filename: 'logo300px.png',
+        path: path.join(__dirname, '../../public/images/logo300px.png'),
         cid: 'logo@cid'
       }]
     };
