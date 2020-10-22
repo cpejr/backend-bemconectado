@@ -1,10 +1,9 @@
 const Ong = require('../models/ongModel');
-const { Joi } = require('celebrate');
-const emailController = require('./emailController');
+const Email = require('./emailController');
 const { uploadFile } = require('../models/gDriveModel');
 const Firebase = require('../models/firebaseModel');
-const { update } = require('../models/ongModel');
 const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
   async create(request, response) {
@@ -33,7 +32,7 @@ module.exports = {
 
         let { _id } = await Ong.createNew(ong);
 
-        emailController.userWaitingForApproval(ong.email, ong.name);
+        Email.userWaitingForApproval(ong.email, ong.name);
 
         return response.status(200).json({ _id, name });
 
@@ -70,6 +69,27 @@ module.exports = {
     }
   },
 
+  async grantAccounts(request, response) {
+    try {
+      const { ids } = request.body;
+
+      const ongs = await Ong.getByIdVector(ids);
+
+      await ongs.forEach(async (ong) => {
+        let newPassword = uuidv4();
+        newPassword = newPassword.slice(0, 6);
+        const uid = await Firebase.createNewOng(ong.email, newPassword);
+        await Ong.update(ong._id, {firebase: uid});
+        Email.userAccountCreatedEmail(ong.email, ong.name, newPassword);
+      });
+
+      return response.status(200).json({message: "Contas criadas e emails enviados com sucesso!"});
+    } catch (error) {
+      console.log(error);
+      return response.status(500).json({ error: error });
+    }
+  },
+
   async update(request, response) {
     const { id } = request.params;
     const newOngData = request.body;
@@ -93,7 +113,7 @@ module.exports = {
       let id = request.params.ongId;
 
       const _ong = await Ong.getById(id);
-      emailController.userRejectedEmail(_ong.email, _ong.name);
+      Email.userRejectedEmail(_ong.email, _ong.name);
 
       let result = await Ong.deleteOng(id);
 

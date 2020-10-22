@@ -143,6 +143,17 @@ class OngActions {
     });
   }
 
+  static getByIdVector(vector) {
+    return new Promise((resolve, reject) => {
+      Ong.find({_id: vector}).then((result) => {
+        resolve(result);
+      }).catch((error) => {
+        console.log(error);
+        reject(error);
+      });
+    });
+  }
+
   static getByFirebaseId(id_firebase) {
     return new Promise((resolve, reject) => {
       Ong.findOne({ firebase: id_firebase, approved: true }).then((result) => {

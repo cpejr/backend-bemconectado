@@ -29,6 +29,15 @@ ongValidator.create = {
     })
 }
 
+ongValidator.grantAccounts = {
+    [Segments.BODY]:Joi.object().keys({
+        ids: Joi.array().required(),
+    }),
+    [Segments.HEADERS]: Joi.object({
+        authorization: Joi.string().required(),
+    }).unknown()
+}
+
 // Update 
 ongValidator.update = {
     [Segments.HEADERS]: Joi.object({

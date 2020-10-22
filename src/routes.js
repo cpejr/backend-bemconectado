@@ -58,4 +58,7 @@ routes.get("/categ/:ongId", celebrate(categValidator.searchCategs), categControl
 //Will find all categories of an Ong with its ID as a param.
 routes.get("/ongcateg", celebrate(categValidator.searchOngs), categController.searchOngs);
 
+//FIREBASE ACCOUNT
+routes.post("/giveAccount", authenticateToken, celebrate(ongValidator.grantAccounts), ongController.grantAccounts);
+
 module.exports = routes;
