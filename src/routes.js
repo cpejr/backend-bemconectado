@@ -36,8 +36,9 @@ routes.post("/registerAcess/:id", celebrate(counterValidator.registerCount), cou
 routes.get("/monthViews", counterController.getRecentCount);
 routes.get("/views/:id", celebrate(counterValidator.getOngCount), counterController.getOngCount);
 
-//SESSION
+//Forgot Password
 routes.post("/session", celebrate(sessionValidator.login), sessionController.login);
+routes.post("/forgotPassword", celebrate(sessionValidator.forgotPassword), sessionController.forgotPassword);
 routes.get("/validateCredentials", driveController.validateCredentials);
 routes.get("/verify", sessionController.verifyToken);
 
