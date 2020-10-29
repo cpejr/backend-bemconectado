@@ -1,12 +1,18 @@
-const { Segments, Joi } = require('celebrate');
+const { Segments, Joi } = require("celebrate");
 
-let sessionValidator = new Object();
-
-sessionValidator.login = {
+const sessionValidator = {
+  login: {
     [Segments.BODY]: Joi.object().keys({
-        email: Joi.string().required(),
-        password: Joi.string().required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
     }),
-}
+  },
+
+  forgotPassword: {
+    [Segments.BODY]: Joi.object().keys({
+      email: Joi.string().email().required(),
+    }),
+  },
+};
 
 module.exports = sessionValidator;
