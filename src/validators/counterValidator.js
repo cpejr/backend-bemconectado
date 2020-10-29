@@ -8,14 +8,14 @@ counterValidator.registerCount = {
     }),
 }
 
-counterValidator.getOngCountByDate = {
+counterValidator.getOngCount = {
     [Segments.PARAMS]: Joi.object().keys({
         id: Joi.string().required(),
     }),
     [Segments.QUERY]: Joi.object().keys({
-        year: Joi.number().integer().required(),
-        month: Joi.number().integer().required(),
-    }),
+        year: Joi.number().integer().optional(),
+        month: Joi.number().integer().optional(),
+    }).with("year","month").with("month","year"),
 }
 
 module.exports = counterValidator;

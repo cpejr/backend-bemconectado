@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const path = require('path');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -17,9 +18,7 @@ class Email {
   static sendEmail(data) {
     const config = {
       from: `${process.env.EMAIL_USER}`,
-      to: data.to,
-      subject: data.subject,
-      text: data.text,
+      ...data
     };
     return new Promise((resolve, reject) => {
       transporter.sendMail(config, (error, info) => {
@@ -50,15 +49,51 @@ class Email {
     return Email.sendEmail(emailContent);
   }
 
-  static userApprovedEmail(to, firstName) {
+  static userApprovedEmail(to, firstName, password) {
     console.log('Cadastro de usuário aprovado');
-    const content = `Prezado(a) ${firstName},
-    Seu cadastro foi realizado e aprovado com sucesso. Agora sua ONG está visível ao público!`;
-    const subject = 'Bem Conectado: Cadastro ativado com sucesso';
+    const content = `
+    Olá ${firstName}, \n
+    O processo de análise foi concluido e nossa equipe acaba de efetuar a aprovação da sua iniciativa. \n
+    A partir de agora sua ONG está visível ao público na plataforma do Bem Conectado.\n
+    Além disso, com sua iniciativa aprovada você terá acesso ao painel de administração \n
+    Nele você poderá editar informações e ter acesso aos dados estatísticos de visita na página de sua iniciativa.\n
+    Para ver o painel acesse https://bem-conectado.com/login \n
+    Dados de login: \n
+    Email: ${to} \n
+    Senha: ${password} (gerada automaticamente) \n
+    Você poderá alterar a sua senha pelo próprio sistema, ou clicando no botão esqueci minha senha na pagina de login.\n
+    Aproveite! \n
+    Atenciosamente, \n
+    Equipe do Bem Conectado. \n
+    `;
+
+    const contentHtml = `
+    <p>Olá ${firstName},</p>
+    <p>O processo de análise foi concluido e nossa equipe acaba de efetuar a aprovação da sua iniciativa.</p>
+    <p>A partir de agora sua ONG está visível ao público na plataforma do Bem Conectado.</p>
+    <p>Além disso, com sua iniciativa aprovada você terá acesso ao painel de administração</p>
+    <p>Nele você poderá editar informações e ter acesso aos dados estatísticos de visita na página de sua iniciativa.</p>
+    <p>Para ver o painel acesse https://bem-conectado.com/login</p>
+    <p>Dados de login:</p>
+    <p>Email: ${to}</p>
+    <p>Senha: ${password} (gerada automaticamente)</p>
+    <p>Você poderá alterar a sua senha pelo próprio sistema, ou clicando no botão esqueci minha senha na pagina de login.\n </p>
+    <p>Aproveite!</p>
+    <p>Atenciosamente,</p>
+    <p>Equipe do Bem Conectado.</p>
+    <img src="cid:logo@cid" />
+    `;
+    const subject = 'Bem Conectado: Cadastro aprovado';
     const emailContent = {
       to: to,
       subject: subject,
-      text: content
+      text: content,
+      html: contentHtml,
+      attachments: [{
+        filename: 'logo300px.png',
+        path: path.join(__dirname, '../../public/images/logo300px.png'),
+        cid: 'logo@cid'
+      }]
     };
     return Email.sendEmail(emailContent);
   }
@@ -72,6 +107,53 @@ class Email {
       to: to,
       subject: subject,
       text: content
+    };
+    return Email.sendEmail(emailContent);
+  }
+
+  static userAccountCreatedEmail(to, fullname, password) {
+    console.log('Novo usuário criado');
+    const subject = 'Bem conectado: Nova Funcionalidade!';
+    const content = `
+    Olá ${fullname}! \n
+    A equipe do Bem Conectado vêm com uma funcionalidade novinha para a sua iniciativa! \n
+    Agora, existe uma zona de administração na qual você poderá editar suas informações que são exibidas no sistema! \n
+    Além disso, é possível analisar quantas vizualizações a sua iniciativa está tendo no sistema toda semana, mês ou ano. \n
+    Venha conhecer essas funcionalidades! \n
+    Para efetuar seu login no sistema, utilize dos seguintes dados: \n
+    Email: ${to} \n
+    Senha: ${password} (gerada automaticamente)\n
+    Essa senha pode ser alterada no próprio sistema, ou clicando no botão esqueci minha senha. \n
+    É só acessar https://bem-conectado.com/login e efetuar o seu login! \n
+    Atenciosamente, \n
+    Equipe do Bem Conectado. \n
+    `;
+
+    const contentHtml = `
+    <p>Olá ${fullname}!</p>
+    <p>A equipe do Bem Conectado vêm com uma funcionalidade novinha para a sua iniciativa! </p>
+    <p>Agora, existe uma zona de administração na qual você poderá editar suas informações que são exibidas no sistema! </p>
+    <p>Além disso, é possível analisar quantas vizualizações a sua iniciativa está tendo no sistema toda semana, mês ou ano. </p>
+    <p>Venha conhecer essas funcionalidades! </p>
+    <p>Para efetuar seu login no sistema, utilize os seguintes dados: </p>
+    <p>Email: ${to}</p>
+    <p>Senha: ${password} (gerada automaticamente)</p>
+    <p>Essa senha pode ser alterada no próprio sistema, ou clicando no botão esqueci minha senha. </p>
+    <p>É só acessar https://bem-conectado.com/login e efetuar seu login! </p>
+    <p>Atenciosamente, </p>
+    <p> Equipe do Bem Conectado. </p>
+    <img src="cid:logo@cid" />
+    `
+    const emailContent = {
+      to: to,
+      subject: subject,
+      text: content,
+      html: contentHtml,
+      attachments: [{
+        filename: 'logo300px.png',
+        path: path.join(__dirname, '../../public/images/logo300px.png'),
+        cid: 'logo@cid'
+      }]
     };
     return Email.sendEmail(emailContent);
   }
