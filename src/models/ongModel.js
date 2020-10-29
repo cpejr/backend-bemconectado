@@ -115,7 +115,7 @@ class OngActions {
       Ong.create(ongData).then((result) => {
         resolve(result);
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
         reject(error);
       });
     });
@@ -126,7 +126,7 @@ class OngActions {
       Ong.deleteOne({ _id: id }).then((result) => {
         resolve(result);
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
         reject(error);
       });
     });
@@ -137,7 +137,7 @@ class OngActions {
       Ong.findById(id).then((result) => {
         resolve(result);
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
         reject(error);
       });
     });
@@ -148,7 +148,7 @@ class OngActions {
       Ong.find({_id: vector}).then((result) => {
         resolve(result);
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
         reject(error);
       });
     });
@@ -159,7 +159,7 @@ class OngActions {
       Ong.findOne({ firebase: id_firebase, approved: true }).then((result) => {
         resolve(result);
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
         reject(error);
       });
     });
@@ -223,7 +223,7 @@ class OngActions {
 
         resolve(result);
       } catch (error) {
-        console.log(error);
+        console.warn(error);
         reject(error);
       }
     });
@@ -234,7 +234,7 @@ class OngActions {
       Ong.find({ approved: false }).then((results) => {
         resolve(results);
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
         reject(error);
       });
     });
@@ -245,7 +245,7 @@ class OngActions {
       Ong.findOneAndUpdate({ _id: id }, newFields,{new:true}).then((results) => {
         resolve(results);
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
         reject(error);
       });
     });
@@ -259,7 +259,7 @@ class OngActions {
         else
           resolve(false);
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
         reject(error);
       });
     });
@@ -297,7 +297,7 @@ class OngActions {
 
         resolve(result);
       } catch (error) {
-        console.log(error);
+        console.warn(error);
         reject(error);
       }
     });

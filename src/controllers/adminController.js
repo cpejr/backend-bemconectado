@@ -10,7 +10,7 @@ module.exports = {
       let result = await Ong.getWaitingAprovement();
       return response.json(result);
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
@@ -38,7 +38,7 @@ module.exports = {
         return response.status(400).json({ error: error });
       }
 
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },

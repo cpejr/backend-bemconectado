@@ -10,7 +10,6 @@ module.exports = {
     try {
       let { name, cnpj, password, email } = request.body;
       const exist = await Ong.checkExistence(name, cnpj)
-      console.log(exist);
       if (!exist) {
         let ong = request.body;
         try {
@@ -18,7 +17,7 @@ module.exports = {
           ong.firebase = id_firebase;
         }
         catch (error) {
-          console.log(error);
+          console.warn(error);
         }
         if (!request.file)
           return response.status(400).json({ message: 'Por favor selecione uma logo' })
@@ -41,7 +40,7 @@ module.exports = {
         return response.status(409).json({ error: 'Ong já existente' });
       }
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
@@ -64,7 +63,7 @@ module.exports = {
 
       return response.json(result);
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
@@ -85,7 +84,7 @@ module.exports = {
 
       return response.status(200).json({message: "Contas criadas e emails enviados com sucesso!"});
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
@@ -103,7 +102,7 @@ module.exports = {
 
       return response.status(200).json({ accessToken: accessToken, user });
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ message: 'Internal server when trying to update ONG.' });
     }
   },
@@ -124,7 +123,7 @@ module.exports = {
         return response.status(400).json({ error: error });
       }
 
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
@@ -141,7 +140,7 @@ module.exports = {
       return response.status(200).json("ok");
 
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },

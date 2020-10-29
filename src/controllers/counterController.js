@@ -8,7 +8,7 @@ module.exports = {
       const result = await Counter.registerCount(date, id);
       return response.json(result);
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
@@ -18,7 +18,7 @@ module.exports = {
       const result = await Counter.getRecentCount();
       return response.json(result);
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
@@ -37,7 +37,7 @@ module.exports = {
       }
       return response.json(result);
     } catch(error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   }

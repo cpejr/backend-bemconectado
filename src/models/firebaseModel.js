@@ -20,7 +20,7 @@ module.exports = {
         .createUserWithEmailAndPassword(email, password);
       return result.user.uid;
     } catch (error) {
-      console.log(error);
+      console.warn(error);
     }
   },
 
@@ -31,7 +31,7 @@ module.exports = {
         .signInWithEmailAndPassword(email, password);
       return result.user.uid;
     } catch (error) {
-      console.log(error);
+      console.warn(error);
     }
   },
 

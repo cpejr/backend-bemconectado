@@ -47,7 +47,7 @@ class CategActions {
       Categ.create(categData).then((result) => {
         resolve(result);
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
         reject(error);
       });
     })
@@ -59,7 +59,7 @@ class CategActions {
       Categ.findOneAndDelete({ name: receivedName }).then((result) => {
         resolve(result);
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
         reject(error);
       })
     })
@@ -80,7 +80,7 @@ class CategActions {
       let results = await Promise.all(promises);
       resolve(results);
     }).catch((error) => {
-      console.log(error);
+      console.warn(error);
       reject(error);
     })
   }
@@ -96,7 +96,7 @@ class CategActions {
         }
         resolve(resultVector);
       }).catch((error) => {
-        console.log(error);
+        console.warn(error);
         reject(error);
       })
     })
@@ -130,7 +130,7 @@ class CategActions {
           let finalResult = unique(aux);
           resolve(finalResult);
         }).catch((error) =>{
-          console.log(error);
+          console.warn(error);
           reject(error);
         });
     })
