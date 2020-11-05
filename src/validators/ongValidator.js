@@ -25,7 +25,6 @@ ongValidator.create = {
         bank: Joi.string().optional(),
         bankAccount: Joi.string().optional(),
         description: Joi.string().optional(),
-        imageSrc: Joi.string().optional(),
     })
 }
 

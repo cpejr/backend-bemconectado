@@ -151,3 +151,24 @@ exports.uploadFile = function uploadFile(buffer, name, mimeType) {
     );
   });
 };
+
+exports.deleteFile = function deleteFile(fileId) {
+  return new Promise((resolve, reject) => {
+    const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+    drive.files.delete(
+      {fileId: fileId},
+      function(err, res) {
+        if (err) {
+          // Handle error
+          console.log(err);
+          if (err.response.status === 404) {
+            resolve();
+          }
+          reject(err);
+        } else {
+          resolve();
+        }
+      }
+    );
+  })
+}
