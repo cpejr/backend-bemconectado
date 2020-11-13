@@ -13,17 +13,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 module.exports = {
-  async createNewOng(email, password) {
-    try {
-      const result = await firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password);
-      return result.user.uid;
-    } catch (error) {
-      console.log(error);
-    }
-  },
-
   async createSession(email, password) {
     try {
       const result = await firebase
@@ -40,3 +29,20 @@ module.exports = {
     return reponse;
   },
 };
+
+    async createNewOng(email, password) {
+        try {
+            const result = await firebase.auth().createUserWithEmailAndPassword(email, password)
+            return result.user.uid;
+        }
+        catch (error) {
+            const result = await firebase.auth().getUserByEmail(email);
+            if(error.code === 'auth/email-already-in-use'){
+                console.log("Email already exists!");
+                return result;
+            } else {
+                console.log(error);
+                return result;
+            }
+        }
+    },

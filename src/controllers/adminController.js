@@ -28,9 +28,7 @@ module.exports = {
         updateFields.firebase = uid;
         emailController.userApprovedEmail(_ong.email, _ong.name, newPassword);
       }
-
       let result = await Ong.update(id, updateFields);
-
       return response.json({_id: result._id, message: 'atualizado com sucesso'});
 
     } catch (error) {
