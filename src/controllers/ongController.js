@@ -96,15 +96,14 @@ module.exports = {
     try {
       if(request.file !== undefined){
         const { originalname, buffer, mimetype } = request.file;
-
         const currentOng = await Ong.getById(id);
         currentOng && await deleteFile(currentOng.imageSrc);
         const newSrc = await uploadFile(buffer, originalname, mimetype);
         newOngData.imageSrc = newSrc;
       }
       let user = await Ong.update(id, newOngData);
-
       user.type = "user";
+
       const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
       //Needs to send updated token
 
