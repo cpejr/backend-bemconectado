@@ -13,6 +13,17 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 module.exports = {
+  async createNewOng(email, password) {
+    try {
+      const result = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password);
+      return result.user.uid;
+    } catch (error) {
+      console.warn(error);
+    }
+  },
+
   async createSession(email, password) {
     try {
       const result = await firebase
@@ -20,7 +31,7 @@ module.exports = {
         .signInWithEmailAndPassword(email, password);
       return result.user.uid;
     } catch (error) {
-      console.log(error);
+      console.warn(error);
     }
   },
 

@@ -23,7 +23,7 @@ class Email {
     return new Promise((resolve, reject) => {
       transporter.sendMail(config, (error, info) => {
         if (error) {
-          console.log(error);
+          console.warn(error);
           reject(error);
         }
         else {

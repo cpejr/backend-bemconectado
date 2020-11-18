@@ -11,7 +11,7 @@ module.exports = {
       if (
         email === process.env.ADMIN_EMAIL &&
         password === process.env.ADMIN_PASSWORD
-      ) {
+      ){
         const user = { type: "admin" };
 
         const accessToken = jwt.sign(
@@ -37,7 +37,7 @@ module.exports = {
         }
       }
     } catch (err) {
-      console.log(err);
+      console.warn(err);
       return response
         .status(500)
         .json({ error: "Fatal error while validating login" });

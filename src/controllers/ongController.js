@@ -1,6 +1,6 @@
 const Ong = require('../models/ongModel');
 const Email = require('./emailController');
-const { uploadFile } = require('../models/gDriveModel');
+const { uploadFile, deleteFile } = require('../models/gDriveModel');
 const Firebase = require('../models/firebaseModel');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
@@ -10,7 +10,6 @@ module.exports = {
     try {
       let { name, cnpj, password, email } = request.body;
       const exist = await Ong.checkExistence(name, cnpj)
-      console.log(exist);
       if (!exist) {
         let ong = request.body;
         try {
@@ -18,7 +17,7 @@ module.exports = {
           ong.firebase = id_firebase;
         }
         catch (error) {
-          console.log(error);
+          console.warn(error);
         }
         if (!request.file)
           return response.status(400).json({ message: 'Por favor selecione uma logo' })
@@ -41,7 +40,7 @@ module.exports = {
         return response.status(409).json({ error: 'Ong já existente' });
       }
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
@@ -64,7 +63,7 @@ module.exports = {
 
       return response.json(result);
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
@@ -85,7 +84,7 @@ module.exports = {
 
       return response.status(200).json({message: "Contas criadas e emails enviados com sucesso!"});
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
@@ -95,15 +94,22 @@ module.exports = {
     const newOngData = request.body;
 
     try {
+      if(request.file !== undefined){
+        const { originalname, buffer, mimetype } = request.file;
+        const currentOng = await Ong.getById(id);
+        currentOng && await deleteFile(currentOng.imageSrc);
+        const newSrc = await uploadFile(buffer, originalname, mimetype);
+        newOngData.imageSrc = newSrc;
+      }
       let user = await Ong.update(id, newOngData);
-
       user.type = "user";
+
       const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
       //Needs to send updated token
 
       return response.status(200).json({ accessToken: accessToken, user });
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ message: 'Internal server when trying to update ONG.' });
     }
   },
@@ -124,7 +130,7 @@ module.exports = {
         return response.status(400).json({ error: error });
       }
 
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
@@ -141,7 +147,7 @@ module.exports = {
       return response.status(200).json("ok");
 
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       return response.status(500).json({ error: error });
     }
   },
